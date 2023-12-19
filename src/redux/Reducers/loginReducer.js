@@ -1,7 +1,7 @@
 import {LOGIN_SUCCESS, LOGOUT, UPDATE_FIRSTNAME} from "../Actions/loginAction";
 
 const initialState = {
-    isLoggedIn : false,
+    isLoggedIn : localStorage.getItem('isLoggedIn'),
     username : '',
 };
 
