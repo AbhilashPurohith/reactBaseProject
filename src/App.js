@@ -1,61 +1,28 @@
 import React, {useState} from "react";
-// import axios from "axios";
 import "./App.css"; // Import the CSS file for styling
 import {connect} from "react-redux";
-import {loginSuccess, logout, updateFirstName} from "./redux/Actions/loginAction";
+import {loginSuccess, logout} from "./redux/Actions/loginAction";
+import LoginScreen from "./components/LoginScreen";
+import HomeScreen from "./components/HomeScreen";
+import {MyProvider} from "./components/MyContext";
 
 function App({isLoggedIn, username, loginSuccess, logout}) {
-    const [userId, setUserId] = useState("");
-    const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
-    // const handleLogin = async () => {
-    //   setIsLoading(true);
-
-    //   try {
-    //     // Simulate an API call
-    //     await axios.post("https://example.com/login", {
-    //       username,
-    //       password
-    //     });
-
-    //     // Delay for 5 seconds (5000 milliseconds)
-    //     await new Promise((resolve) => setTimeout(resolve, 5000));
-
-    //     setIsLoggedIn(true);
-    //   } catch (error) {
-    //     alert("Invalid username or password");
-    //   }
-
-    //   setIsLoading(false);
-    // };
-
-    const handleStorage = () => {
-        localStorage.setItem('Username', userId);
-        localStorage.setItem('Password', password);
-        localStorage.setItem('isLoggedIn', isLoggedIn);
-    };
-    const removeStorage = () => {
-        localStorage.removeItem('Name');
-        localStorage.removeItem('Password');
-        localStorage.removeItem('isLoggedIn');
-    };
-
-    const handleLogin = () => {
-        if (userId === 'admin' && password === 'admin') {
-            loginSuccess(userId);
-            handleStorage();
-        } else {
-            alert("Invalid username or password");
-        }
-    };
 
     const handleLogout = () => {
         logout();
         removeStorage();
     };
 
-    return (<div className="App">
+    const removeStorage = () => {
+        localStorage.removeItem('Name');
+        localStorage.removeItem('Password');
+        localStorage.removeItem('isLoggedIn');
+    };
+
+    return (
+        <MyProvider>
+        <div className="App">
             {isLoading && <div className="loading-overlay"></div>}
             {isLoggedIn && (<nav className="navbar">
                     <div className="navbar-left">
@@ -70,29 +37,11 @@ function App({isLoggedIn, username, loginSuccess, logout}) {
                     </div>
                 </nav>)}
             <div className="content">
-                {isLoggedIn ? (<h1>Welcome, {localStorage.getItem('Username')}!</h1>) : (<div className="login-container">
-                        <h1>Login</h1>
-                        <input
-                            type="text"
-                            placeholder="userId"
-                            value={userId}
-                            onChange={(e) => {
-                                setUserId(e.target.value);
-                                updateFirstName(e.target.value);
-                            }}
-                        />
-                        <br/>
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <br/>
-                        <button onClick={handleLogin}>Login</button>
-                    </div>)}
+                {isLoggedIn ? <HomeScreen/> :
+                    <LoginScreen isLoggedIn={isLoggedIn}/>}
             </div>
-        </div>);
+        </div>
+        </MyProvider>);
 }
 
 const mapStateToProps = (state) => {
@@ -102,7 +51,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-    loginSuccess, logout, updateFirstName
+    loginSuccess, logout
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
